@@ -27,11 +27,11 @@ Enhancements:
 
 '''
 
-
+import os                 
 import re
 from collections import defaultdict, Counter    
 
-THESAURI_FOLDER = "thesauri"                     
+THESAURI_FOLDER = "thesauri"
 
 from nltk.tokenize import RegexpTokenizer    
 import random
@@ -44,7 +44,8 @@ class WriteLike:
         self.thesaurus = self._read_thesaurus()
 
     def _read_thesaurus(self):
-        filename = "/static/" + THESAURI_FOLDER + "/" + self.author + ".txt"
+        current_path = os.path.dirname(os.path.abspath(__file__))
+        filename = current_path + "/static" + "/" + THESAURI_FOLDER + "/" + self.author + ".txt"
 
         thesaurus = defaultdict(lambda: Counter())
 
