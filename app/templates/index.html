@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% import 'macros.html' as macros %}
+
+
+{% block content %}
+	<div class="row">
+		<div class="well col-md-6">
+			{% call macros.render_form(form, action_url=url_for('index'), action_text='Submit', class_='login-form') %}
+                {{ macros.render_field(form.style, type='select') }}
+                {{ macros.render_field(form.input_text, placeholder='Enter Text', type='textarea', rows=23, cols=50) }}
+            {% endcall %}
+		</div>
+		<div class="well col-md-6">
+			<label>Output</label>
+			<p>
+			{% if output_text %}
+				{{ output_text }}
+			{% endif %}
+			</p>
+		</div>
+	</div>
+{% endblock %}
