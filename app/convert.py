@@ -138,7 +138,7 @@ class WriteLike:
             # Reject non-ASCII characters
             try:
                 word = word.decode('ascii')
-            except UnicodeDecodeError, e:
+            except (UnicodeDecodeError, UnicodeEncodeError) as e:
                 continue
 
             # Check if word is in thesaurus: copy word exactly if not, replace if yes
