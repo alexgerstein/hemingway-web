@@ -45,7 +45,7 @@ class WriteLike:
 
     def _read_thesaurus(self):
         current_path = os.path.dirname(os.path.abspath(__file__))
-        filename = current_path + "/static" + "/" + THESAURI_FOLDER + "/" + self.author + ".txt"
+        filename = current_path + "/static" + "/" + THESAURI_FOLDER + "/" + self.author + ".thes"
 
         thesaurus = defaultdict(lambda: Counter())
 

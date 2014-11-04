@@ -5,5 +5,5 @@ from wtforms.validators import DataRequired, Length
 
 class Form(Form):
 	input_text = TextAreaField('Input', validators=[DataRequired()])
-	style = SelectField('Style', choices=[("dickens", "Dickens"), ("shakespeare", "Shakespeare"), ("hemingway", "Hemingway")])
+	style = SelectField('Style', choices=[("dickens", "Dickens"), ("rappers", "Rappers"), ("shakespeare", "Shakespeare"), ("hemingway", "Hemingway")])
 
