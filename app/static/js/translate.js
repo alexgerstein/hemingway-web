@@ -69,5 +69,5 @@ $(document).ready(function() {
 	    $loading.hide();
 	  });
 
-	$('#style').change(set_default_text);
+	$('#style').change(set_default_text).change();
 });
