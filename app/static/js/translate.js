@@ -1,5 +1,5 @@
-var WORDS_PER_MILLISEC = 4
-var MILLISECS = 400
+var WORDS_PER_MILLISEC = 3
+var MILLISECS = 200
 
 function getWidthPercentage(selector) {
 	return 100 * parseFloat($(selector).css('width')) / parseFloat($(selector).parent().css('width'));
