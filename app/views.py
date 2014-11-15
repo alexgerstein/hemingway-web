@@ -1,26 +1,27 @@
-from flask import render_template
+from flask import render_template, request, jsonify
 from app import app
 from forms import InputForm
 from convert import WriteLike
 
 
-@app.route('/', methods=['GET', 'POST'])
-@app.route('/index', methods=['GET', 'POST'])
+@app.route('/', methods=['GET'])
+@app.route('/index', methods=['GET'])
 def index():
-  form = InputForm()
-
-  if form.validate_on_submit():
-    writer = WriteLike(form.style.data)
-
-    output_text = writer.style_convert_string(form.input_text.data)
-
-    return render_template('index.html',
-                           input_text=form.input_text.data,
-                           output_text=output_text,
-                           form=form)
-
   return render_template('index.html',
-							form=form)
+							form=InputForm())
+
+
+@app.route('/translate', methods=['POST'])
+def translate():
+  form = InputForm(request.form)
+
+  if form.validate():
+    writer = WriteLike(request.values.get('style'))
+    output_text = writer.style_convert_string(request.values.get('input_text'))
+
+    return jsonify( {'output': output_text} )
+  
+  return jsonify( {'errors': form.errors})
 
 @app.route('/about')
 def about():
