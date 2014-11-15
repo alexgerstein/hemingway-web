@@ -16,6 +16,13 @@ function set_default_text(e) {
 	$("#input_text").val(window[e.target.value.toUpperCase()]);
 }
 
+function download() {
+  var pom = document.createElement('a');
+  pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent($("#output").text()));
+  pom.setAttribute('download', "output.txt");
+  pom.click();
+}
+
 function translate() {
 	clearFormSubmission()
 	var posting = $.post('/translate', $('#input-form').serialize())
