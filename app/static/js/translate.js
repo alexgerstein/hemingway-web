@@ -13,7 +13,7 @@ function getWidthPercentage(selector) {
 }
 
 function set_default_text(e) {
-	$("#input_text").text(window[e.target.value.toUpperCase()]);
+	$("#input_text").val(window[e.target.value.toUpperCase()]);
 }
 
 function translate() {
