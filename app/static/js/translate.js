@@ -23,6 +23,24 @@ function download() {
   pom.click();
 }
 
+function compute_changes() {
+	var original = $("#input_text").val().split(" ")
+	var converted = $("#output").html().split(" ")
+
+	var changes = 0;
+	var total_words = original.length;
+
+	for (var i = 0; i < original.length; i++) {
+		if (original[i] != converted[i]) {
+			converted[i] = '<highlight>' + converted[i] + '</highlight>';
+			changes += 1;
+		}
+	}
+
+	$("#output").html(converted.join(" "));
+	$("#status").text(changes + " out of " + total_words + " words replaced");
+}
+
 function translate() {
 	clearFormSubmission()
 	var posting = $.post('/translate', $('#input-form').serialize())
@@ -40,7 +58,8 @@ function translate() {
 			}
 	    }
 	    else {
-	    	$('#output').text(response['output'])
+	    	$('#output').html(response['output']);
+	    	compute_changes();
 	    }
 	})
 }
