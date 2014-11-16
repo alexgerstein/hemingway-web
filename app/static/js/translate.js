@@ -93,6 +93,7 @@ $(document).ready(function() {
 	    set_progress();
 	  })
 	  .ajaxStop(function () {
+  		$('.progress-bar').width("100%");
 	    $loading.hide();
   		$('.progress-bar').width("0%");
 	  });
