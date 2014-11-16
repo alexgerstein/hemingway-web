@@ -67,12 +67,13 @@ function translate() {
 
 function set_progress() {
 	var words = $('#input_text').val().split(" ").length
+	$bar.width("0%");
+
 	var progress = setInterval(function() {
 		var $bar = $('.progress-bar');
 	    
 	    if (getWidthPercentage('.progress-bar')>=100) {
 	        clearInterval(progress);
-	        $bar.width("0%");
 	    } else {
 	        $bar.width(getWidthPercentage('.progress-bar') + ((WORDS_PER_MILLISEC * MILLISECS) / words) * 100 + "%");
 	    }
