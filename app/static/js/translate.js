@@ -33,15 +33,15 @@ function compute_changes() {
 	for (var i = 0; i < original.length; i++) {
 		if (original[i] != converted[i]) {
 			var split_word = original[i].match(/[\w-']+|[^\w\s]+/g)
-			var punctuation = ""
-			if (split_word.length > 1) {
-				punctuation = split_word[1];
+			var end_punctuation = ""
+			if (split_word[split_word.length - 1].match(/[^\w\s]+/g)) {
+				end_punctuation = split_word[split_word.length - 1];
 			}
 
-			var converted_text = converted[i].replace(punctuation, "");
-			var original_text = original[i].replace(punctuation, "");
+			var converted_text = converted[i].replace(end_punctuation, "");
+			var original_text = original[i].replace(end_punctuation, "");
 
-			converted[i] = '<highlight data-toggle="tooltip" title="' + original_text + '">' + converted_text + '</highlight>' + punctuation;
+			converted[i] = '<highlight data-toggle="tooltip" title="' + original_text + '">' + converted_text + '</highlight>' + end_punctuation;
 			changes += 1;
 		}
 	}
