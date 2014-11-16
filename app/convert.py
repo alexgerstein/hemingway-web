@@ -31,11 +31,39 @@ import os
 import re
 from collections import defaultdict, Counter
 
-THESAURI_FOLDER = "thesauri"
+from nltk import pos_tag
+from nltk.wsd import lesk as nltk_lesk
 
-from nltk.tokenize import RegexpTokenizer
 import random
 import string
+from config import *
+
+from nltk.tokenize import RegexpTokenizer
+
+REGEX = "|".join([WORD, PRICE, PUNCTUATION_EXCEPT_HYPHEN])
+ADJ, ADJ_SAT, ADV, NOUN, VERB = 'a', 's', 'r', 'n', 'v'
+
+def tokenize_string(line):
+    tokenizer = RegexpTokenizer(REGEX)
+    return tokenizer.tokenize(line)
+
+def reduce_pos_tagset(ptb_tag):
+    """
+    Converts Penn Tree bank pos tags to wordnet pos tags.
+    """
+
+    if ptb_tag[0] == 'V':
+        wn_pos = VERB
+    elif ptb_tag[0] == 'N':
+        wn_pos = NOUN
+    elif ptb_tag[0] == 'J':
+        wn_pos = ADJ
+    elif ptb_tag[0] == 'R':
+        wn_pos = ADV
+    else:
+        wn_pos = None
+
+    return wn_pos
 
 
 class WriteLike:
@@ -60,128 +88,74 @@ class WriteLike:
                     current_word.update({syn: int(count)})
         return thesaurus
 
-    def style_convert_file(self, infile, outfile):
-        """ For each word in input text, look up synonyms in the
-            author's thesaurus and probabilistically select a
-            replacement word. Write output to outfile. """
-
-        source = open("input/" + infile + ".txt", 'r')
-        dest = open("output/" + outfile + ".out", 'w')
-        first_write = True
-
-        # Tokenize full input file by spaces + punctuation
-        tokenizer = RegexpTokenizer('\w+|\$[\d\.]+|\S+')
-        text = tokenizer.tokenize(source.read())
-
-        if self.debug:
-            print "text: ", text
-
-        for word in text:
-            orig_word = word  # preserve capitalization
-            word = word.strip().lower()
-            # Reject non-ASCII characters
-            try:
-                word = word.decode('ascii')
-            except (UnicodeDecodeError,UnicodeEncodeError):
-                continue
-
-            if self.debug:
-                print
-                print word, "\t-->\t", self.thesaurus[word]
-
-            # Check if word is in thesaurus: copy word exactly if not, replace if yes
-            if len(self.thesaurus[word]) == 0:
-                # Word not in thesaurus, so copy original word
-                if first_write:
-                    dest.write(orig_word)
-                    first_write = False
-                else:
-                    dest.write(" " + orig_word)
-
-            else:
-                # Probabilistically choose a synonym in thesaurus[word]
-                weighted_key = self._weighted_choice(word)
-                # Make replaced word uppercase if original word was uppercase
-                if orig_word[0].isupper():
-                    weighted_key = weighted_key.title()
-
-                # Write to output file
-                if first_write:
-                    dest.write(weighted_key)
-                    first_write = False
-                else:
-                    # Don't add a space when printing punctuation
-                    if word in string.punctuation:
-                        dest.write(orig_word)
-                    else:
-                        dest.write(" " + weighted_key)
-
-        source.close()
-        dest.close()
-
-        return outfile
 
     def style_convert_string(self, input_text):
         """ For each word in input text, look up synonyms in the
             author's thesaurus and probabilistically select a
-            replacement word. Return output string. """
+            replacement word. Write output to outfile. """
 
-        first_write = True
-
-        # Tokenize full input file by spaces + punctuation
-        tokenizer = RegexpTokenizer('\w+|\$[\d\.]+|\S+')
-        text = tokenizer.tokenize(input_text)
+        text = tokenize_string(input_text)
         output = ""
 
-        for word in text:
-            orig_word = word  # preserve capitalization
-            word = word.strip().lower()
-            # Reject non-ASCII characters
-            try:
-                word = word.decode('ascii')
-            except (UnicodeDecodeError, UnicodeEncodeError):
-                continue
+        tagged_tuples = pos_tag(text)
 
-            # Check if word is in thesaurus: copy word exactly if not, replace if yes
-            if len(self.thesaurus[word]) == 0:
-                # Word not in thesaurus, so copy original word
-                if first_write:
-                    output += orig_word
-                    first_write = False
-                else:
-                    output += " " + orig_word
+        tagged_string = ''
+        untagged_string = ''
+        for word, tag in tagged_tuples:
+            untagged_string += word + ' '
+            tagged_string += word + '_' + tag + ' '
 
+        for index, original_word in enumerate(tagged_string.split()):
+
+            orig_word, temp_pos = tuple(original_word.split('_'))
+
+            word = orig_word.strip().lower()
+
+            was_title = orig_word.istitle()        # "Title"
+            was_capitalized = orig_word.isupper()  # "UPPER"
+            was_lower = orig_word.islower()        # "lower"
+
+            # converts penn tree bank parts of speech to wordnet parts of speech
+            wordnet_pos = reduce_pos_tagset(temp_pos)
+            if wordnet_pos is not None:
+                synset = nltk_lesk(untagged_string, orig_word.strip().lower(), wordnet_pos)
             else:
-                # Probabilistically choose a synonym in thesaurus[word]
-                weighted_key = self._weighted_choice(word)
-                # Make replaced word uppercase if original word was uppercase
-                if orig_word[0].isupper():
-                    weighted_key = weighted_key.title()
+                synset = nltk_lesk(untagged_string, orig_word.strip().lower())
 
-                # Write to output file
-                if first_write:
-                    output += weighted_key
-                    first_write = False
-                else:
-                    # Don't add a space when printing punctuation
-                    if word in string.punctuation:
-                        output += orig_word
-                    else:
-                        output += " " + weighted_key
+            # Probabilistically choose a synonym in thesaurus[synset]
+            weighted_key = self._weighted_choice_lesk(str(synset), word)
+
+            # Match capitalization of original word
+            if was_title:
+                weighted_key = weighted_key.title()
+            elif was_capitalized:
+                weighted_key = weighted_key.upper()
+            elif not was_lower: 
+                weighted_key = orig_word
+
+            # Add a space between words, no space for punctuation
+            if word not in string.punctuation and index != 0: 
+                output += " "
+
+            output += weighted_key
 
         return output
 
-    def _weighted_choice(self, word):
-        """ Returns a probabilistically-selected synonym for a word.
-            Works by randomly choosing a number 'n', iterating through
-            synonyms in thesaurus[word] in random order, & decreasing
-            'n' by the 'weight' (frequency) of each synonym. """
+    def _weighted_choice_lesk(self, synset, orig_word):
+        """
+        Returns a probabilistically-selected synonym for a word.
+
+        Works by randomly choosing a number 'n', iterating through
+        synonyms in thesaurus[word] in random order, & decreasing
+        'n' by the 'weight' (frequency) of each synonym.
+        """
+        if not synset or synset not in self.thesaurus:
+            return self._weighted_choice(orig_word) 
+
         # Obtain random normal_pdf weight value from [0, total_weight]
-        word_dict = self.thesaurus[word]
+        word_dict = self.thesaurus[synset]
         total_weight = sum(word_dict[item] for item in word_dict)
         n = random.uniform(0, total_weight)
-
-        choice = word
 
         # Randomize word order and select word with weight capturing 'n'
         mix_keys = word_dict.keys()
@@ -193,4 +167,32 @@ class WriteLike:
             n = n - weight
 
         # Return final word as best choice (e.g. tail 'n' value)
-        return choice
+        return mix_keys[-1]
+
+    def _weighted_choice(self, word):
+        """
+        Returns a probabilistically-selected synonym for a word.
+
+        Works by randomly choosing a number 'n', iterating through
+        synonyms in thesaurus[word] in random order, & decreasing
+        'n' by the 'weight' (frequency) of each synonym.
+        """
+        if word not in self.thesaurus:
+            return word
+
+        # Obtain random normal_pdf weight value from [0, total_weight]
+        word_dict = self.thesaurus[word]
+        total_weight = sum(word_dict[item] for item in word_dict)
+        n = random.uniform(0, total_weight)
+
+        # Randomize word order and select word with weight capturing 'n'
+        mix_keys = word_dict.keys()
+        random.shuffle(mix_keys)
+        for choice in mix_keys:
+            weight = word_dict[choice]
+            if n < weight:
+                return choice
+            n = n - weight
+
+        # Return final word as best choice (e.g. tail 'n' value)
+        return mix_keys[-1]
