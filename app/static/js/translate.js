@@ -67,7 +67,6 @@ function translate() {
 
 function set_progress() {
 	var words = $('#input_text').val().split(" ").length;
-	$('.progress-bar').width("0%");
 
 	var progress = setInterval(function() {
 		var $bar = $('.progress-bar');
@@ -95,6 +94,7 @@ $(document).ready(function() {
 	  })
 	  .ajaxStop(function () {
 	    $loading.hide();
+  		$('.progress-bar').width("0%");
 	  });
 
 	$('#style').change(set_default_text).change();
