@@ -32,13 +32,14 @@ function compute_changes() {
 
 	for (var i = 0; i < original.length; i++) {
 		if (original[i] != converted[i]) {
-			converted[i] = '<highlight>' + converted[i] + '</highlight>';
+			converted[i] = '<highlight data-toggle="tooltip" title="' + original[i] + '">' + converted[i] + '</highlight>';
 			changes += 1;
 		}
 	}
 
 	$("#output").html(converted.join(" "));
 	$("#status").text(changes + " out of " + total_words + " words replaced");
+	$("highlight").tooltip();
 }
 
 function translate() {
