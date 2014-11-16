@@ -32,7 +32,16 @@ function compute_changes() {
 
 	for (var i = 0; i < original.length; i++) {
 		if (original[i] != converted[i]) {
-			converted[i] = '<highlight data-toggle="tooltip" title="' + original[i] + '">' + converted[i] + '</highlight>';
+			var split_word = original[i].match(/[\w-']+|[^\w\s]+/g)
+			var punctuation = ""
+			if (split_word.length > 1) {
+				punctuation = split_word[1];
+			}
+
+			var converted_text = converted[i].replace(punctuation, "");
+			var original_text = original[i].replace(punctuation, "");
+
+			converted[i] = '<highlight data-toggle="tooltip" title="' + original_text + '">' + converted_text + '</highlight>' + punctuation;
 			changes += 1;
 		}
 	}
