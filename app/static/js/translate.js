@@ -31,19 +31,21 @@ function compute_changes() {
 	var total_words = original.length;
 
 	for (var i = 0; i < original.length; i++) {
-		if (original[i] != converted[i]) {
-			var split_word = original[i].match(/[\w-']+|[^\w\s]+/g)
-			var end_punctuation = ""
-			if (split_word[split_word.length - 1].match(/[^\w\s]+/g)) {
-				end_punctuation = split_word[split_word.length - 1];
-			}
+		var split_word = original[i].match(/[\w-']+|[^\w\s]+/g)
+		var end_punctuation = ""
+		if (split_word[split_word.length - 1].match(/[^\w\s]+/g)) {
+			end_punctuation = split_word[split_word.length - 1];
+		}
 
-			var converted_text = converted[i].replace(end_punctuation, "");
-			var original_text = original[i].replace(end_punctuation, "");
+		var converted_text = converted[i].replace(end_punctuation, "");
+		var original_text = original[i].replace(end_punctuation, "");
 
-			converted[i] = '<highlight data-toggle="tooltip" title="' + original_text + '">' + converted_text + '</highlight>' + end_punctuation;
+		if (original_text != converted_text) {
+			converted[i] = '<highlight data-toggle="tooltip" title="' + original_text + '">' + converted_text + '</highlight>';
 			changes += 1;
 		}
+
+		converted[i] += end_punctuation;
 	}
 
 	$("#output").html(converted.join(" "));
