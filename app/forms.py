@@ -3,7 +3,7 @@ from wtforms import SelectField, TextAreaField
 from wtforms.validators import ValidationError
 
 
-class Word_Length(object):
+class WordLength(object):
     def __init__(self, max=-1, message=None):
         self.max = max
         if not message:
@@ -17,6 +17,6 @@ class Word_Length(object):
 
 
 class InputForm(Form):
-    input_text = TextAreaField('Input', validators=[Word_Length(max=50)])
+    input_text = TextAreaField('Input', validators=[WordLength(max=300)])
     style = SelectField('Style',
                         choices=[("dickens", "Dickens"), ("shakespeare", "Shakespeare"), ("hemingway", "Hemingway"), ("rappers", "Rappers")])
