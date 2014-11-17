@@ -99,15 +99,9 @@ class WriteLike:
 
         tagged_tuples = pos_tag(text)
 
-        tagged_string = ''
-        untagged_string = ''
-        for word, tag in tagged_tuples:
-            untagged_string += word + ' '
-            tagged_string += word + '_' + tag + ' '
+        for index, tagged_tuple in enumerate(tagged_tuples):
 
-        for index, original_word in enumerate(tagged_string.split()):
-
-            orig_word, temp_pos = tuple(original_word.split('_'))
+            orig_word, temp_pos = tagged_tuple
 
             word = orig_word.strip().lower()
 
@@ -118,9 +112,9 @@ class WriteLike:
             # converts penn tree bank parts of speech to wordnet parts of speech
             wordnet_pos = reduce_pos_tagset(temp_pos)
             if wordnet_pos is not None:
-                synset = nltk_lesk(untagged_string, orig_word.strip().lower(), wordnet_pos)
+                synset = nltk_lesk(orig_word, orig_word.strip().lower(), wordnet_pos)
             else:
-                synset = nltk_lesk(untagged_string, orig_word.strip().lower())
+                synset = nltk_lesk(orig_word, orig_word.strip().lower())
 
             # Probabilistically choose a synonym in thesaurus[synset]
             weighted_key = self._weighted_choice_lesk(str(synset), word)

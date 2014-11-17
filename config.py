@@ -7,4 +7,4 @@ THESAURI_FOLDER = "thesauri"
 
 WORD = "\w+[\'-]?\w*"
 PRICE = "\$[\d.]+"
-PUNCTUATION_EXCEPT_HYPHEN = '[' + punctuation.replace('-', '') + ']'
+PUNCTUATION_EXCEPT_HYPHEN = '[' + punctuation.replace('-', '') + "\n" + ']'

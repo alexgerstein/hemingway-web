@@ -1,5 +1,5 @@
 // Progress Bar Constants
-var WORDS_PER_MILLISEC = 3
+var WORDS_PER_MILLISEC = 0.02
 var MILLISECS = 200
 
 // Default Author Text
@@ -23,32 +23,44 @@ function download() {
   pom.click();
 }
 
-function compute_changes() {
-	var original = $("#input_text").val().split(" ")
-	var converted = $("#output").html().split(" ")
+function compute_changes(converted_text) {
+	var original_lines = $("#input_text").val().split("\n");
+	var converted_lines = converted_text.split("\n");
 
 	var changes = 0;
-	var total_words = original.length;
+	var total_words = 0;
+	var converted = "";
 
-	for (var i = 0; i < original.length; i++) {
-		var split_word = original[i].match(/[\w-']+|[^\w\s]+/g)
-		var end_punctuation = ""
-		if (split_word[split_word.length - 1].match(/[^\w\s]+/g)) {
-			end_punctuation = split_word[split_word.length - 1];
+	for (var j = 0; j < original_lines.length; j++) {
+		original_words = original_lines[j].trim().split(" ");
+		converted_words = converted_lines[j].trim().split(" ");
+
+		for (var i = 0; i < original_words.length; i++) {
+			var split_word = original_words[i].match(/[\w-']+|[^\w\s]+/g);
+
+			var end_punctuation = ""
+			if (split_word[split_word.length - 1].match(/[^\w\s]+$/g)) {
+				end_punctuation = split_word[split_word.length - 1];
+			}
+
+			var converted_text = converted_words[i].replace(end_punctuation, "");
+			var original_text = original_words[i].replace(end_punctuation, "");
+
+			if (original_text != converted_text) {
+				converted_words[i] = '<highlight data-toggle="tooltip" title="' + original_text + '">' + converted_text + '</highlight>';
+				changes += 1;
+			} else {
+				converted_words[i] = converted_text;
+			}
+
+			converted_words[i] += end_punctuation;
+			total_words += 1;
 		}
 
-		var converted_text = converted[i].replace(end_punctuation, "");
-		var original_text = original[i].replace(end_punctuation, "");
-
-		if (original_text != converted_text) {
-			converted[i] = '<highlight data-toggle="tooltip" title="' + original_text + '">' + converted_text + '</highlight>';
-			changes += 1;
-		}
-
-		converted[i] += end_punctuation;
+		converted += converted_words.join(" ") + "<br/>";
 	}
 
-	$("#output").html(converted.join(" "));
+	$("#output").html(converted);
 	$("#status").text(changes + " out of " + total_words + " words replaced");
 	$("highlight").tooltip();
 }
@@ -70,8 +82,7 @@ function translate() {
 			}
 	    }
 	    else {
-	    	$('#output').html(response['output']);
-	    	compute_changes();
+	    	compute_changes(response['output']);
 	    }
 	})
 }
