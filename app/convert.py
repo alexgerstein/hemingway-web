@@ -40,6 +40,8 @@ from config import *
 
 from nltk.tokenize import RegexpTokenizer
 
+nltk.data.path.append('./nltk_data/')
+
 REGEX = "|".join([WORD, PRICE, PUNCTUATION_EXCEPT_HYPHEN])
 ADJ, ADJ_SAT, ADV, NOUN, VERB = 'a', 's', 'r', 'n', 'v'
 
