@@ -6,7 +6,7 @@ var MILLISECS = 200
 var HEMINGWAY = "The best way to find out if you can trust somebody is to trust them."
 var DICKENS = "It was the best of times, it was the worst of times, it was the age of wisdom, it was the age of foolishness, it was the epoch of belief, it was the epoch of incredulity, it was the season of Light, it was the season of Darkness, it was the spring of hope, it was the winter of despair…"
 var SHAKESPEARE = "Shall I compare thee to a summer's day?\nThou art more lovely and more temperate:\nRough winds do shake the darling buds of May,\nAnd summer's lease hath all too short a date."
-var RAPPERS = "If you having girl problems I feel bad for you son. I got 99 problems but a bitch ain’t one."
+var RAPPERS = "If you having girl problems I feel bad for you son. I got 99 problems but a bitch ain't one."
 
 function getWidthPercentage(selector) {
 	return 100 * parseFloat($(selector).css('width')) / parseFloat($(selector).parent().css('width'));

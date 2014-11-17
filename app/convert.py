@@ -112,7 +112,6 @@ class WriteLike:
             orig_word, temp_pos = tagged_tuple
 
             word = orig_word.strip().lower()
-
             was_title = orig_word.istitle()        # "Title"
             was_capitalized = orig_word.isupper()  # "UPPER"
             was_lower = orig_word.islower()        # "lower"
@@ -123,12 +122,6 @@ class WriteLike:
                 synset = nltk_lesk(untagged_string, orig_word.strip().lower(), wordnet_pos)
             else:
                 synset = nltk_lesk(untagged_string, orig_word.strip().lower())
-            print orig_word, synset
-
-            ss = nltk_lesk("I went to the bank to withdraw my deposit.", "bank")
-            print ss
-            ss = nltk_lesk("In the forest, I stared at the tree bark.", "bark")
-            print ss
 
             # Probabilistically choose a synonym in thesaurus[synset]
             weighted_key = self._weighted_choice_lesk(str(synset), word)
