@@ -6,10 +6,12 @@ app.config.from_object('config')
 
 from app import views, forms
 
-if os.environ.get('HEROKU') is not None:
-    import logging
+ADMINS = ['gerstein.alex@gmail.com']
 
-    stream_handler = logging.StreamHandler()
-    app.logger.addHandler(stream_handler)
-    app.logger.setLevel(logging.INFO)
-    app.logger.info('WLH startup')
+import logging
+from logging.handlers import SMTPHandler
+mail_handler = SMTPHandler('127.0.0.1',
+                           'server-error@damp-peak-7452.herokuapp.com',
+                           ADMINS, 'WLH Failed')
+mail_handler.setLevel(logging.ERROR)
+app.logger.addHandler(mail_handler)
