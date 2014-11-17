@@ -31,7 +31,7 @@ import os
 import re
 from collections import defaultdict, Counter
 
-from nltk import pos_tag
+import nltk
 from nltk.wsd import lesk as nltk_lesk
 
 import random
@@ -99,7 +99,7 @@ class WriteLike:
         text = tokenize_string(input_text)
         output = ""
 
-        tagged_tuples = pos_tag(text)
+        tagged_tuples = nltk.pos_tag(text)
 
         for index, tagged_tuple in enumerate(tagged_tuples):
 
