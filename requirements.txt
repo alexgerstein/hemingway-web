@@ -4,3 +4,4 @@ Werkzeug==0.8.3
 gunicorn==0.17.2
 Flask-WTF==0.9
 nltk==3.0
+numpy==1.9.1
