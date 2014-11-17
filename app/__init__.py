@@ -6,9 +6,8 @@ app.config.from_object('config')
 
 from app import views, forms
 
-if os.environ.get('HEROKU') is not None:
+if not app.debug:
     import logging
-
     stream_handler = logging.StreamHandler()
     app.logger.addHandler(stream_handler)
     app.logger.setLevel(logging.INFO)
