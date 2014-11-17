@@ -116,15 +116,19 @@ class WriteLike:
             was_capitalized = orig_word.isupper()  # "UPPER"
             was_lower = orig_word.islower()        # "lower"
 
-            # converts penn tree bank parts of speech to wordnet parts of speech
-            wordnet_pos = reduce_pos_tagset(temp_pos)
-            if wordnet_pos is not None:
-                synset = nltk_lesk(untagged_string, orig_word.strip().lower(), wordnet_pos)
-            else:
-                synset = nltk_lesk(untagged_string, orig_word.strip().lower())
+            # Don't replace determinants
+            if temp_pos == u'DT':
+                weighted_key = word
+            else:      
+                # converts penn tree bank parts of speech to wordnet parts of speech
+                wordnet_pos = reduce_pos_tagset(temp_pos)
+                if wordnet_pos:
+                    synset = nltk_lesk(untagged_string, orig_word.strip().lower(), wordnet_pos)
+                else:
+                    synset = nltk_lesk(untagged_string, orig_word.strip().lower())
 
-            # Probabilistically choose a synonym in thesaurus[synset]
-            weighted_key = self._weighted_choice_lesk(str(synset), word)
+                # Probabilistically choose a synonym in thesaurus[synset]
+                weighted_key = self._weighted_choice_lesk(str(synset), word)
 
             # Match capitalization of original word
             if was_title:
