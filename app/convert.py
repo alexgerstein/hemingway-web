@@ -116,12 +116,17 @@ class WriteLike:
             if temp_pos == u'DT':
                 weighted_key = word
             else:      
-                # converts penn tree bank parts of speech to wordnet parts of speech
-                wordnet_pos = reduce_pos_tagset(temp_pos)
-                if wordnet_pos:
-                    synset = nltk_lesk(untagged_string, orig_word.strip().lower(), wordnet_pos)
+                if temp_pos in ['VBD', 'VBG', 'VBN', 'NNS', 'NNPS']:
+                    synset = None
                 else:
-                    synset = nltk_lesk(untagged_string, orig_word.strip().lower())
+                    # Replace word
+                    # Converts penn tree bank pos tag to wordnet pos tag
+                    wordnet_pos = reduce_pos_tagset(temp_pos)
+                    print temp_pos, word
+                    if wordnet_pos:
+                        synset = nltk_lesk(untagged_string, word, wordnet_pos)
+                    else:
+                        synset = nltk_lesk(untagged_string, word)
 
                 # Probabilistically choose a synonym in thesaurus[synset]
                 weighted_key = self._weighted_choice_lesk(str(synset), word)
