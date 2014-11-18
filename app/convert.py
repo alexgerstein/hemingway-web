@@ -101,11 +101,7 @@ class WriteLike:
 
         tagged_tuples = nltk.pos_tag(text)
 
-        tagged_string = '' # tagged string
-        untagged_string = '' # normal string
-        for word, tag in tagged_tuples:
-            untagged_string += word + ' '
-            tagged_string += word + '_' + tag + ' '
+        untagged_string = " ".join([tagged_tuple[0] for tagged_tuple in tagged_tuples])
 
         for index, tagged_tuple in enumerate(tagged_tuples):
 
